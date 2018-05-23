@@ -1,0 +1,189 @@
+[{
+  "id"        : 1,
+  "name"      : "Единицы измерения",
+  "questions" :
+  [
+    {
+      "id"       : 1,
+      "content"  : "Сколько грамм в килограмме?",
+      "answers"  : [
+        {
+          "content"   : "10",
+          "right"     :  false
+        },
+        {
+          "content"   : "100",
+          "right"     :  false
+        },
+        {
+          "content"   : "1000",
+          "right"     :  true
+        },
+        {
+          "content"   : "10000",
+          "right"     :  false
+        }
+      ]
+    },
+    {
+      "id"       : 2,
+      "content"  : "Сколько градусов в прямом углу?",
+      "answers"  : [
+        {
+          "content"   : "60",
+          "right"     :  false
+        },
+        {
+          "content"   : "90",
+          "right"     :  true
+        },
+        {
+          "content"   : "100",
+          "right"     :  false
+        },
+        {
+          "content"   : "120",
+          "right"     :  false
+        }
+      ]
+    },
+    {
+      "id"       : 3,
+      "content"  : "Сколько сантиметров в метре?",
+      "answers"  : [
+        {
+          "content"   : "10",
+          "right"     :  false
+        },
+        {
+          "content"   : "100",
+          "right"     :  true
+        },
+        {
+          "content"   : "1000",
+          "right"     :  false
+        },
+        {
+          "content"   : "10000",
+          "right"     :  false
+        }
+      ]
+    },
+    {
+      "id"       : 4,
+      "content"  : "Сколько миллилитров в литре?",
+      "answers"  : [
+        {
+          "content"   : "10",
+          "right"     :  false
+        },
+        {
+          "content"   : "100",
+          "right"     :  false
+        },
+        {
+          "content"   : "500",
+          "right"     :  false
+        },
+        {
+          "content"   : "1000",
+          "right"     :  true
+        }
+      ]
+    },
+    {
+      "id"       : 5,
+      "content"  : "Сколько миллиметров в дециметре?",
+      "answers"  : [
+        {
+          "content"   : "200",
+          "right"     :  false
+        },
+        {
+          "content"   : "100",
+          "right"     :  true
+        },
+        {
+          "content"   : "10",
+          "right"     :  false
+        },
+        {
+          "content"   : "1000",
+          "right"     :  false
+        }
+      ]
+    }
+  ]
+},
+  {
+    "id"    : 2,
+    "name"  : "Столицы",
+    "questions" : [
+      {
+        "id"       : 1,
+        "content"  : "Какой город является столицей России?",
+        "answers"  : [
+          {
+            "content"   : "Самара",
+            "right"     :  false
+          },
+          {
+            "content"   : "Москва",
+            "right"     :  true
+          },
+          {
+            "content"   : "Новосибирск",
+            "right"     :  false
+          },
+          {
+            "content"   : "Симферополь",
+            "right"     :  false
+          }
+        ]
+      },
+      {
+        "id"       : 2,
+        "content"  : "Столицей какого государства является Лондон?",
+        "answers"  : [
+          {
+            "content"   : "Чехия",
+            "right"     :  false
+          },
+          {
+            "content"   : "Польша",
+            "right"     :  false
+          },
+          {
+            "content"   : "Испания",
+            "right"     :  false
+          },
+          {
+            "content"   : "Англия",
+            "right"     :  true
+          }
+        ]
+      },
+      {
+        "id"       : 3,
+        "content"  : "Столицей какого государства является Берлин?",
+        "answers"  : [
+          {
+            "content"   : "Зимбабве",
+            "right"     :  false
+          },
+          {
+            "content"   : "Германия",
+            "right"     :  true
+          },
+          {
+            "content"   : "Австралия",
+            "right"     :  false
+          },
+          {
+            "content"   : "Китай",
+            "right"     :  false
+          }
+        ]
+      }
+    ]
+  }]
