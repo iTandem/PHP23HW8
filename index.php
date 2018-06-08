@@ -1,68 +1,62 @@
 <?php
-    require_once 'functions.php';
-    session_start();
-    if (isset($_COOKIE['restricted'])) {
-        echo 'Вход закрыт, попробуйте позже.';
-        exit;
+    require_once 'core/core.php';
+    
+    if (!empty($_GET['msg'])) {
+        $message = $_GET['msg'];
+    } else {
+        $message = 'Вход';
     }
-    setAppCookie('tries', 3);
-    if ($_POST['login'] ?? '') {
-        $_SESSION['user'] = $_POST['login'];
-        $user = findUserByName($_POST['login']);
-        if ($_POST['pass'] ?? '') {
-            if (!$user) {
-                $errorMsg = "Пользователя с данным логином не существует.\n Введите верное имя пользователя или войдите как гость.";
-            } elseif ($user['pass'] == $_POST['pass']) {
-                
-                if (isset($_SESSION['captcha']) && $_SESSION['captcha'] != $_POST['captcha']) {
-                    setcookie('tries', $_COOKIE['tries'] - 1);
-                    $errorMsg = "Введённые цифры не совпадают с цифрами на картинке.";
-                } else {
-                    $_SESSION['is_admin'] = 1;
-                    header('Location:login.php');
-                }
-            } else {
-                setcookie('tries', $_COOKIE['tries'] - 1);
-                $errorMsg = "Логин и пароль не совпадают.\n Введите верный пароль или войдите как гость.";
-            }
+    
+    $errors = [];
+    
+    if (isPost()) {
+        if (login(getParam('login'), getParam('password'))) {
+            redirect('list.php');
         } else {
-            $_SESSION['is_admin'] = 0;
-            setcookie('tries', 0, time() - 1000);
-            unset($_SESSION['captcha']);
-            header('Location:login.php');
+            $errors[] = 'Неверные логин или пароль';
         }
     }
-    if ($_COOKIE['tries'] <= 0) {
-        $_SESSION['captcha'] = mt_rand(10000, 99999);
-    }
-    if ($_COOKIE['tries'] <= -300) {
-        setcookie('restricted', 1, time() + 60 * 60);
-    }
+    //----------------------------------------------------------
 ?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Авторизация</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <title>Вход</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body>
 <div class="container">
-  <div class="login">
-    <h2>Авторизация</h2>
-    <p class="error"><?= nl2br($errorMsg ?? '') ?></p>
-    <form action="" method="post" accept-charset="utf-8">
-      <input type="text" name="login" value="<?= $_POST['login'] ?? '' ?>" placeholder="Логин" autofocus required>
-      <input type="password" name="pass" value="" placeholder="Пароль">
-      <input type="submit" name="submit" value="Войти">
-        <?php if ($_COOKIE['tries'] <= 0) : ?>
-          <label>Введите цифры, показанные на рисунке</label>
-          <img src="captcha.php?text=<?= $_SESSION['captcha'] ?>" alt="Captcha">
-          <label for="captcha">
-          <input type="text" name="captcha" value="" required>
-          </label>
-        <?php endif ?>
-    </form>
+  <div class="row vertical-offset-100">
+    <div class="col-md-4 col-md-offset-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><?= $message ?></h3>
+        </div>
+        <div class="panel-body">
+            <?php if (!empty($errors)): ?>
+              <ul>
+                  <?php foreach ($errors as $error): ?>
+                    <li><?= $error ?></li>
+                  <?php endforeach; ?>
+              </ul>
+            <?php endif; ?>
+          <form method="POST">
+            <fieldset>
+              <div class="form-group">
+                <input class="form-control" placeholder="Login" name="login" type="text">
+              </div>
+              <div class="form-group">
+                <input class="form-control" placeholder="Password" name="password" type="text">
+              </div>
+              <input class="btn btn-success btn-block" type="submit" value="Войти">
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 </body>

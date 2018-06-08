@@ -11,7 +11,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>JSON TEST form</title>
+  <title>Удалить тест | JSON TEST form</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
@@ -29,28 +29,22 @@
     </div>
   </div>
 </nav>
-<div class="container">
-  <h2 style="text-align: center;">Здесь вы можете загрузить JSON файл теста</h2><br><br>
-  <form enctype="multipart/form-data" method="POST" action="upload_handler.php" class="form-horizontal">
-    <div class="form-group">
-      <label for="userfile" class="control-label col-md-4 col-sm-4">Файл теста: </label>
-      <div class="col-md-4 col-sm-4">
-        <input name="userfile" type="file"/>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-md-4 col-sm-4"></div>
-      <div class="col-md-4 col-sm-4">
-        <button type="submit" value="Отправить" class="btn btn-success">Отправить</button>
-      </div>
-    </div>
-  </form>
+<div class="container" style="text-align: center;">
+  <h2>Удалить тест</h2>
+    <?php
+        $get_catalog = scandir(TESTS_LOCATION);
+        foreach ($get_catalog as $key => $value) {
+            if ($value !== '.' && $value !== '..') {
+                echo '<a href="delete_question.php?removefile=' . $value . '">' . json_decode(file_get_contents(TESTS_LOCATION . $value), true)['testname'] . '</a><br>' . PHP_EOL;
+            }
+        }
+    ?>
 </div>
 </body>
 </html>
-/**
-* Created by PhpStorm.
-* User: konstantin
-* Date: 16.05.2018
-* Time: 11:49
-*/
+    /**
+     * Created by PhpStorm.
+     * User: konstantin
+     * Date: 08.06.2018
+     * Time: 7:47
+     */

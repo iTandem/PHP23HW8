@@ -1,102 +1,79 @@
 <?php
-    session_start();
-    if(!$_SESSION['user']) {
-        http_response_code(403);
-        echo 'Вход только для авторизованных пользователей!';
-        exit;
-    }
-    $testId = $_GET['id'];
-    $json = file_get_contents('tests/tests.json');
-    $data = json_decode($json, true);
-    $test = null;
-    foreach ($data as $datum) {
-        if ($datum['id'] == $testId) {
-            $test = $datum;
-            break;
+    
+    require_once 'core/core.php';
+    
+    loginCheck();
+    
+    foreach (scandir(TESTS_LOCATION) as $key => $value) {
+        if (TESTS_LOCATION . $value == TESTS_LOCATION . $_GET['testfile']) {
+            $request_check = true;
         }
     }
-    if(!$test) {
-        http_response_code(404);
+    
+    if ($request_check !== true) {
+        header("HTTP/1.0 404 Not Found");
+        echo '<h1 style="text-align: center; font-size: 40pt;">404</h1><h1 style="text-align: center;">Страница не найдена</h1>';
         exit;
     }
-    $name = $test['name'];
+    
+    $test_contents = json_decode(file_get_contents(TESTS_LOCATION . $_GET['testfile']), true);
 ?>
+
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <title>Тест</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSON TEST form</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
-<body>
+<body style="background-color: cornsilk">
+<nav class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-collapse navbar-top collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="list.php">СПИСОК ТЕСТОВ</a></li>
+          <?php if (!$_SESSION['is_guest']) {
+              echo '<li><a href="admin.php">ЗАГРУЗИТЬ ТЕСТ</a></li>';
+              echo '<li><a href="delete_file.php">УДАЛИТЬ ТЕСТ</a></li>';
+          } ?>
+        <li><a href="logout.php">ВЫЙТИ</a></li>
+        <li><a href="#">Привет, <?php echo getAuthorizedUser()['username'] ?>!</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
 <div class="container">
-    <?php
-        $testId = $_GET['id'];
-        $json = file_get_contents('tests/tests.json');
-        $data = json_decode($json, true);
-        $test = null;
-        foreach ($data as $datum) {
-            if ($datum['id'] == $testId) {
-                $test = $datum;
-                break;
+  <h2 style="text-align: center;"><?= $test_contents['testname'] ?></h2><br><br>
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <?php echo '<form action="answer_handler.php?testname=' . $test_contents['testname'] . '&testfile=' . $_GET['testfile'] . '" method="post">'; ?>
+        <?php
+            foreach ($test_contents as $pri_key => $pri_value) {
+                if ($pri_key !== 'testname' && $pri_key !== 'answers') {
+                    echo '<div class="panel panel-info">';
+                    foreach ($pri_value as $se_key => $se_value) {
+                        if ($se_key == 'question') {
+                            echo '<div class="panel-heading"><h4>' . $pri_key . ' . ' . $se_value . '</h4></div>';
+                        } elseif ($se_key == 'variants') {
+                            echo '<div class="panel-body"><div class="form-control">' . PHP_EOL;
+                            foreach ($se_value as $ter_key => $ter_value) {
+                                echo '<div class="radio-inline"><label><input type="radio" name="user_answers[' . $pri_key . ']" id="' . $pri_key . $ter_key . '" value="' . $ter_key . '">' . $ter_value . '</label></div>' . PHP_EOL;
+                            }
+                            echo '</div></div>' . PHP_EOL;
+                        }
+                    }
+                    echo '</div>' . PHP_EOL;
+                }
             }
-        }
-        if (!$test) {
-            http_response_code(404);
-            exit;
-        }
-        $name = $test['name'];
-    ?>
-    <h1>Тест <?php echo $testId . ' .' . $name ?></h1>
-    <nav>
-        <ul>
-            <li><a href="admin.php" title="Загрузка теста">Загрузка теста</a></li>
-            <li><a href="list.php" title="Список тестов">Список тестов</a></li>
-            <li>Тест <?php echo $testId . '. ' . $name ?></li>
-        </ul>
-    </nav>
-    <hr>
-    <?php
-        if (isset($_POST['submit'])) :
-            $result = array_sum($_POST);
-            $qCount = count($test['questions']);
-            $username = $_POST['username'];
-            $imagePath = "certificate.php?result=$result&qcount=$qCount&username=$username";
-            ?>
-            <a href="<?php echo $imagePath ?>" title="Скачать" download>
-                <img class="certificate" src="<?php echo $imagePath ?>" alt="Сертификат">
-            </a>
-            <p><strong>Результат: <?php echo $result . ' из ' . $qCount; ?>.</strong></p>
-            <p><a href="">Пройти заново</a></p>
-            <?php
-            exit;
-        endif;
-    ?>
-    <form action="test.php?id=<?php echo $testId; ?>" method="post">
-        <?php foreach ($test['questions'] as $qNum => $question) { ?>
-            <p><strong><?php echo $question['id'] . '. ' . $question['content']; ?></strong></p>
-            <?php foreach ($question['answers'] as $aNum => $answer) {
-                $answerId = 'q' . $qNum . 'a' . $aNum;
-                $questionId = 'q' . $qNum;
-                ?>
-                <label for="<?php echo $answerId; ?>">
-                    <input type="radio" name="<?php echo $questionId; ?>" value="<?php echo $answer['right']; ?>"
-                           id="<?php echo $answerId; ?>"><?php echo $answer['content']; ?>
-                </label>
-            <?php } ?>
-        <?php } ?>
-        <br>
-        <input type="text" name="username" value="" placeholder="Введите ваше имя" required>
-        <hr>
-        <input type="submit" name="submit" value="Ответить">
-    </form>
-    <br>
+        ?>
+      <button class="btn btn-success btn-block">Проверить!</button>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
 </div>
+<div class="row" style="height: 40px;"></div>
 </body>
 </html>
-    /**
-     * Created by PhpStorm.
-     * User: konstantin
-     * Date: 16.05.2018
-     * Time: 11:51
-     */
